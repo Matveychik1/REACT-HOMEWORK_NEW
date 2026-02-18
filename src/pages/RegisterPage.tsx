@@ -2,19 +2,13 @@ import { Button, Form, Input, Upload, message } from "antd";
 import type { IRegisterForm } from "../types/IRegisterForm.ts";
 import { UserOutlined } from "@ant-design/icons";
 import { useState } from "react";
-<<<<<<< HEAD
-import {useNavigate} from "react-router-dom";
+
+
+
 
 const RegisterPage = () => {
     const [form] = Form.useForm<IRegisterForm>();
 
-    const navigate = useNavigate();
-
-=======
-
-const RegisterPage = () => {
-    const [form] = Form.useForm<IRegisterForm>();
->>>>>>> 2890e8572b2f5c2160006dafa022b3d70a68ae1f
     const [myFileUpload, setMyFileUpload] = useState<File | null>(null);
 
     const onSubmitHandler = (values: IRegisterForm) => {
@@ -28,13 +22,13 @@ const RegisterPage = () => {
             const json = JSON.stringify({ ...values, image: base64 });
             console.log("JSON DATA", json);
             localStorage.setItem("user", json);
-<<<<<<< HEAD
+
 
             message.success("Реєстрація успішна!");
             navigate("/profile")
-=======
+
             message.success("Реєстрація успішна!");
->>>>>>> 2890e8572b2f5c2160006dafa022b3d70a68ae1f
+
         };
     };
 
