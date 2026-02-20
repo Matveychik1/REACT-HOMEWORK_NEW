@@ -1,5 +1,5 @@
 import './App.css'
-import HomePage from "./pages/HomePage.tsx";
+import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage.tsx";
 import {Route, Routes} from "react-router-dom";
 import MainLayout from "./componetns/layouts/MainLayout";
