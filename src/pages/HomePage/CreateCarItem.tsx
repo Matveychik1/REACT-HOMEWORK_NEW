@@ -1,19 +1,52 @@
 import type {ICreateCar} from "../../types/ICreateCar.ts";
 import {Button, Form, type FormProps, Input} from "antd";
+import type {ICarItem} from "../../types/ICarItem.ts";
+import {useEffect} from "react";
 
 interface Props{
     onCreate: (car: ICreateCar) => void;
+    editCar?: ICarItem;
+    onEdit: (car: ICarItem) => void;
+
 }
 
-const CreateCarItem = ({onCreate}: Props) => {
+
+const CreateCarItem = ({onCreate, editCar, onEdit}: Props) => {
+
 
     const [form] = Form.useForm<ICreateCar>();
 
+    useEffect(() => {
+            if(editCar)
+            {
+                if(editCar.id!=0) {
+                    form.setFieldsValue({
+                        mark: editCar.mark,
+                        model: editCar.model,
+                        color: editCar.color,
+                        year: editCar.year,
+                        price: editCar.price,
+                        description: editCar.description,
+                        image: editCar.image,
+                    });
+                }
+            }
+        },
+        [editCar]);
+
+    console.log("editCar", editCar);
+
     const onHandlerSubmit = (values: ICreateCar) => {
         console.log("Submit form", values);
-        onCreate(values);
+        if(editCar) {
+            if(editCar.id!=0)
+                onEdit({...editCar, ...values});
+            else
+                // викликаємо callback функцію з дочірнього компонента
+                onCreate(values);
+        }
+        // очищаэмо форму
         form.resetFields();
-
     }
 
     const formItemLayout: FormProps = {

@@ -75,6 +75,16 @@ const HomePage = () =>
         setCars(prev => [...prev,{...car, id: id}]);
     }
 
+    //оновлення елемента в списку
+     const editCarHandler = (car: ICarItem) => {
+    setSelectedCar(emptyCar);
+    setCars(prev =>
+        prev.map(c =>
+            c.id === car.id ? { ...c, ...car } : c
+        )
+    );
+}
+
     const deleteCarHandler = (id: number) => {
         // console.log("Delete item ", id);
         //будемо змінювати наш список таким чином,
@@ -108,7 +118,7 @@ const HomePage = () =>
                             }
                         ]} />
             </div>
-            <CreateCarItem onCreate={addCarHandler} />
+            <CreateCarItem onCreate={addCarHandler} editCar={selectedCar} onEdit={editCarHandler} />
             {cars.map(car =>
                   <ItemCar key ={car.id} car = {car}
                   deleteCar={deleteCarHandler} setSelectedCar={setSelectedCar}/>
