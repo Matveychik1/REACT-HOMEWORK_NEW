@@ -1,21 +1,21 @@
 import type {ICreateCar} from "../../types/ICreateCar.ts";
-import {Button, Form, type FormProps, Input} from "antd";
+import {Button, Form, type FormProps, Input, Upload} from "antd";
 import type {ICarItem} from "../../types/ICarItem.ts";
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
+import ImageCropper from "../../componetns/common/ImageCropper";
 
-interface Props{
+interface Props {
     onCreate: (car: ICreateCar) => void;
-    editCar?: ICarItem;
-    onEdit: (car: ICarItem) => void;
-
+    editCar?: ICarItem; // відповідає за зміну авто
+    onEdit: (car: ICarItem) => void; // якщо відбувається зміна авто
 }
 
-
-const CreateCarItem = ({onCreate, editCar, onEdit}: Props) => {
-
-
+const CreateCarItem = ({ onCreate, editCar, onEdit }: Props) => {
     const [form] = Form.useForm<ICreateCar>();
-
+    // стан для збереження зображення
+    const [previewImage, setPreviewImage] = useState<string | null>(null);
+    // стан для відкриття модального вікна
+    const [isModalOpen, setIsModalOpen] = useState(false);
     useEffect(() => {
             if(editCar)
             {
@@ -34,7 +34,22 @@ const CreateCarItem = ({onCreate, editCar, onEdit}: Props) => {
         },
         [editCar]);
 
+
     console.log("editCar", editCar);
+
+    const handleSelectImage = (file: File) => {
+        if (!file) return;
+
+        // ініціалізуємо FileReader для читання файлу
+        const reader = new FileReader();
+        // перетворюємо файл у Base64
+        reader.readAsDataURL(file);
+        // при завантаженні файлу змінюємо стани та відкриваємо модальне вікно
+        reader.onload = () => {
+            setPreviewImage(reader.result as string);
+            setIsModalOpen(true);
+        }
+    }
 
     const onHandlerSubmit = (values: ICreateCar) => {
         console.log("Submit form", values);
@@ -73,14 +88,14 @@ const CreateCarItem = ({onCreate, editCar, onEdit}: Props) => {
                         <Form.Item<ICreateCar>
                             label={"Марка"}
                             name={"mark"}
-                            rules={[{required: true, message: "Вкажіть марку авто"}]}
+                            rules={[{required: true, message: "Вкажіть марку"}]}
                         >
                             <Input/>
                         </Form.Item>
                         <Form.Item<ICreateCar>
                             label={"Модель"}
                             name={"model"}
-                            rules={[{required: true, message: "Вкажіть модель авто"}]}
+                            rules={[{required: true, message: "Вкажіть модель"}]}
                         >
                             <Input/>
                         </Form.Item>
@@ -88,7 +103,7 @@ const CreateCarItem = ({onCreate, editCar, onEdit}: Props) => {
                         <Form.Item<ICreateCar>
                             label={"Колір"}
                             name={"color"}
-                            rules={[{required: true, message: "Вкажіть колір авто"}]}
+                            rules={[{required: true, message: "Вкажіть колір"}]}
                         >
                             <Input/>
                         </Form.Item>
@@ -96,7 +111,7 @@ const CreateCarItem = ({onCreate, editCar, onEdit}: Props) => {
                         <Form.Item<ICreateCar>
                             label={"Рік"}
                             name={"year"}
-                            rules={[{required: true, message: "Вкажіть рік авто"}]}
+                            rules={[{required: true, message: "Вкажіть рік"}]}
                         >
                             <Input/>
                         </Form.Item>
@@ -104,7 +119,7 @@ const CreateCarItem = ({onCreate, editCar, onEdit}: Props) => {
                         <Form.Item<ICreateCar>
                             label={"Ціна"}
                             name={"price"}
-                            rules={[{required: true, message: "Вкажіть ціну авто"}]}
+                            rules={[{required: true, message: "Вкажіть ціну"}]}
                         >
                             <Input/>
                         </Form.Item>
@@ -113,7 +128,7 @@ const CreateCarItem = ({onCreate, editCar, onEdit}: Props) => {
                         <Form.Item<ICreateCar>
                             label={"Опис"}
                             name={"description"}
-                            rules={[{required: true, message: "Вкажіть опис авто"}]}
+                            rules={[{required: true, message: "Вкажіть опис"}]}
                         >
                             <Input/>
                         </Form.Item>
@@ -121,9 +136,18 @@ const CreateCarItem = ({onCreate, editCar, onEdit}: Props) => {
                         <Form.Item<ICreateCar>
                             label={"Фото"}
                             name={"image"}
-                            rules={[{required: true, message: "Додайте фото авто"}]}
+                            rules={[{required: true, message: "Вкажіть фото"}]}
                         >
-                            <Input/>
+                            <Upload
+                                maxCount={1}
+                                showUploadList={false}
+                                beforeUpload={(file) => {
+                                    handleSelectImage(file);
+                                    return false;
+                                }}
+                            >
+                                <Button>Обрати зображення</Button>
+                            </Upload>
                         </Form.Item>
 
                         <div className={"flex justify-center"}>
@@ -136,6 +160,15 @@ const CreateCarItem = ({onCreate, editCar, onEdit}: Props) => {
                     </div>
 
                 </Form>
+                <ImageCropper
+                    isOpen={isModalOpen}
+                    setIsOpen={setIsModalOpen}
+                    image={previewImage || ""}
+                    onCrop={(base64) => {
+                        form.setFieldsValue({image: base64});
+                        setPreviewImage(null);
+                    }}
+                />
             </div>
         </>
     )
